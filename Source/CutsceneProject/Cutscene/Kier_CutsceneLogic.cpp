@@ -4,12 +4,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "Other/WorldLibrary.h"
 
-void UKier_CutsceneLogic::Init_Implementation()
+void UKier_CutsceneLogic::Init_Implementation(UWorld* World)
 {
-	const UWorld* World = UWorldLibrary::GetWorldSafe();
-	if (IsValid(World))
+	CachedWorld = TWeakObjectPtr(World);
+	if (CachedWorld.IsValid())
 	{
-		GameState = UGameplayStatics::GetGameState(World);
+		GameState = UGameplayStatics::GetGameState(CachedWorld.Get());
 	}
 }
 

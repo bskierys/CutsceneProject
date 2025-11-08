@@ -6,7 +6,11 @@ public class CutsceneProject : ModuleRules
 {
 	public CutsceneProject(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PrivateDependencyModuleNames.AddRange(new string[] { "LevelSequence" });
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"MovieScene",
+			"LevelSequence"
+		});
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[]

@@ -19,10 +19,11 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	AGameStateBase* GameState;
-	
+
+	// TODO: Every of these Objects Needs world. Maybe create a common class?
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Cutscenes")
-	void Init();
-	virtual void Init_Implementation();
+	void Init(UWorld* World);
+	virtual void Init_Implementation(UWorld* World);
 
 	/**
 	 * Does the Logic has next step.
@@ -49,4 +50,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Cutscenes")
 	ULevelSequence* GetCurrentStepSequence();
 	virtual ULevelSequence* GetCurrentStepSequence_Implementation();
+
+protected:
+	UPROPERTY()
+	TWeakObjectPtr<UWorld> CachedWorld;
 };
