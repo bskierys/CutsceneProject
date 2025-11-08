@@ -7,7 +7,6 @@
 #include "UObject/NoExportTypes.h"
 #include "Kier_CutsceneLogic.generated.h"
 
-class ACutsceneProjectGameMode;
 /**
  * 
  */
@@ -17,8 +16,6 @@ class CUTSCENEPROJECT_API UKier_CutsceneLogic : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly)
-	ACutsceneProjectGameMode* GameMode;
 
 	UPROPERTY(BlueprintReadOnly)
 	AGameStateBase* GameState;

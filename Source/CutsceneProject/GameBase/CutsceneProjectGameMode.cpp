@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CutsceneProjectGameMode.h"
+
+#include "GameBase/CutsceneProjectGameState.h"
 #include "UObject/ConstructorHelpers.h"
 
 ACutsceneProjectGameMode::ACutsceneProjectGameMode()
@@ -11,4 +13,5 @@ ACutsceneProjectGameMode::ACutsceneProjectGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+	GameStateClass = ACutsceneProjectGameState::StaticClass();
 }
