@@ -4,14 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "LevelSequence.h"
+#include "Other/ObjectWithWorld.h"
 #include "UObject/NoExportTypes.h"
-#include "Kier_CutsceneLogic.generated.h"
+#include "CutsceneLogic.generated.h"
 
 /**
  * 
  */
 UCLASS(Abstract, Blueprintable, DefaultToInstanced, EditInlineNew)
-class CUTSCENEPROJECT_API UKier_CutsceneLogic : public UObject
+class CUTSCENEPROJECT_API UCutsceneLogic : public UObjectWithWorld
 {
 	GENERATED_BODY()
 
@@ -20,10 +21,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	AGameStateBase* GameState;
 
-	// TODO: Every of these Objects Needs world. Maybe create a common class?
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Cutscenes")
-	void Init(UWorld* World);
-	virtual void Init_Implementation(UWorld* World);
+	virtual void Init_Implementation(UWorld* World) override;
 
 	/**
 	 * Does the Logic has next step.
@@ -50,8 +48,4 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Cutscenes")
 	ULevelSequence* GetCurrentStepSequence();
 	virtual ULevelSequence* GetCurrentStepSequence_Implementation();
-
-protected:
-	UPROPERTY()
-	TWeakObjectPtr<UWorld> CachedWorld;
 };

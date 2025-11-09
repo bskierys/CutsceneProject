@@ -101,7 +101,7 @@ void ACutsceneProjectCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 
 void ACutsceneProjectCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	OnLocationMoveRequestCompleted.Clear();
+	OnLocationWalkRequestCompleted.Clear();
 
 	Super::EndPlay(EndPlayReason);
 }
@@ -142,17 +142,16 @@ void ACutsceneProjectCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void ACutsceneProjectCharacter::MoveToLocationWithNotify_Implementation(
-	FVector Location,
-	FRotator Rotation,
+void ACutsceneProjectCharacter::WalkToLocationWithNotify_Implementation(
+	FLocationAndRotation TargetLocation,
 	FName RequestId
 )
 {
 	// TODO: WalkRequest
-	NotifyMoveRequestCompleted(RequestId);
+	NotifyWalkRequestCompleted(RequestId);
 }
 
-void ACutsceneProjectCharacter::NotifyMoveRequestCompleted(FName RequestId)
+void ACutsceneProjectCharacter::NotifyWalkRequestCompleted(FName RequestId)
 {
-	OnLocationMoveRequestCompleted.Broadcast(RequestId);
+	OnLocationWalkRequestCompleted.Broadcast(RequestId);
 }

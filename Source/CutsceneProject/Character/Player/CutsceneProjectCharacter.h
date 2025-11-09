@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "Other/WorldLibrary.h"
 #include "CutsceneProjectCharacter.generated.h"
 
 class USpringArmComponent;
@@ -16,7 +17,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
-	FOnLocationMoveRequestCompleted,
+	FOnLocationWalkRequestCompleted,
 	FName, RequestId
 );
 
@@ -32,7 +33,7 @@ class ACutsceneProjectCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-	
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
@@ -51,19 +52,15 @@ class ACutsceneProjectCharacter : public ACharacter
 
 public:
 	ACutsceneProjectCharacter();
-	
 
 protected:
-
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-			
 
 protected:
-
 	virtual void NotifyControllerChanged() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -78,13 +75,12 @@ public:
 
 	// TODO: Temp functions. Use C++ PlayerController for that
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void MoveToLocationWithNotify(FVector Location, FRotator Rotation, FName RequestId);
-	virtual void MoveToLocationWithNotify_Implementation(FVector Location, FRotator Rotation, FName RequestId);
+	void WalkToLocationWithNotify(FLocationAndRotation TargetLocation, FName RequestId);
+	virtual void WalkToLocationWithNotify_Implementation(FLocationAndRotation TargetLocation, FName RequestId);
 
 	UPROPERTY(BlueprintAssignable)
-	FOnLocationMoveRequestCompleted OnLocationMoveRequestCompleted;
+	FOnLocationWalkRequestCompleted OnLocationWalkRequestCompleted;
 
 	UFUNCTION(BlueprintCallable)
-	void NotifyMoveRequestCompleted(FName RequestId);
+	void NotifyWalkRequestCompleted(FName RequestId);
 };
-

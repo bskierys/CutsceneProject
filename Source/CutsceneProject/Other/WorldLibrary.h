@@ -6,6 +6,18 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "WorldLibrary.generated.h"
 
+USTRUCT(BlueprintType)
+struct FLocationAndRotation
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector TargetLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FRotator TargetRotation;
+};
+
 UCLASS()
 class CUTSCENEPROJECT_API UWorldLibrary : public UBlueprintFunctionLibrary
 {
