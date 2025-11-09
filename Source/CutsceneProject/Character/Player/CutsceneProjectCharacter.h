@@ -15,6 +15,11 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FOnLocationMoveRequestCompleted,
+	FName, RequestId
+);
+
 UCLASS(config=Game)
 class ACutsceneProjectCharacter : public ACharacter
 {
@@ -63,10 +68,23 @@ protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	// TODO: Temp functions. Use C++ PlayerController for that
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void MoveToLocationWithNotify(FVector Location, FRotator Rotation, FName RequestId);
+	virtual void MoveToLocationWithNotify_Implementation(FVector Location, FRotator Rotation, FName RequestId);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnLocationMoveRequestCompleted OnLocationMoveRequestCompleted;
+
+	UFUNCTION(BlueprintCallable)
+	void NotifyMoveRequestCompleted(FName RequestId);
 };
 
