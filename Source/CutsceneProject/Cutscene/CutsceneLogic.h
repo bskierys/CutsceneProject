@@ -17,7 +17,6 @@ class CUTSCENEPROJECT_API UCutsceneLogic : public UObjectWithWorld
 	GENERATED_BODY()
 
 public:
-
 	UPROPERTY(BlueprintReadOnly)
 	AGameStateBase* GameState;
 
@@ -29,7 +28,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Category="Cutscenes")
 	bool IsAtFirstStep() const;
 	virtual bool IsAtFirstStep_Implementation() const;
-	
+
 	/**
 	 * Does the Logic has next step.
 	 */

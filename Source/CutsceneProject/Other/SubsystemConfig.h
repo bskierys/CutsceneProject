@@ -6,9 +6,6 @@
 #include "Engine/DataAsset.h"
 #include "SubsystemConfig.generated.h"
 
-/**
- * 
- */
 UCLASS(Abstract, BlueprintType)
 class CUTSCENEPROJECT_API USubsystemConfig : public UDataAsset
 {
