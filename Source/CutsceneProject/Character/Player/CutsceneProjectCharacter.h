@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interaction/InteractionController.h"
 #include "Logging/LogMacros.h"
 #include "Other/WorldLibrary.h"
 #include "CutsceneProjectCharacter.generated.h"
 
+class UInteractionOwnerComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
@@ -22,7 +24,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 );
 
 UCLASS(config=Game)
-class ACutsceneProjectCharacter : public ACharacter
+class ACutsceneProjectCharacter : public ACharacter, public IInteractionController
 {
 	GENERATED_BODY()
 
@@ -33,6 +35,10 @@ class ACutsceneProjectCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
+	/** Interaction Owner */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UInteractionOwnerComponent* InteractionOwner;
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -50,8 +56,15 @@ class ACutsceneProjectCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	/** Interact Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
+
 public:
 	ACutsceneProjectCharacter();
+
+	virtual void AddInteractable_Implementation(AActor* Interactable) override;
+	virtual void RemoveInteractable_Implementation(AActor* Interactable) override;
 
 protected:
 	/** Called for movement input */
@@ -59,6 +72,9 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	/** Called for interaction input */
+	void Interact(const FInputActionValue& Value);
 
 protected:
 	virtual void NotifyControllerChanged() override;

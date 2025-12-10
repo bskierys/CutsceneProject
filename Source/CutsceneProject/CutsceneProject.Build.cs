@@ -20,7 +20,10 @@ public class CutsceneProject : ModuleRules
 			"Engine",
 			"InputCore",
 			"EnhancedInput",
-			"LevelSequence"
+			"LevelSequence",
+			"UMG",
+			"Slate",
+			"SlateCore"
 		});
 		
 		PrivateIncludePaths.AddRange(new string[] { "CutsceneProject" });

@@ -10,6 +10,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Interaction/Interactable.h"
+#include "Interaction/InteractionOwnerComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -39,6 +41,8 @@ ACutsceneProjectCharacter::ACutsceneProjectCharacter()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
+	InteractionOwner = CreateDefaultSubobject<UInteractionOwnerComponent>(TEXT("InteractionOwner"));
+	
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -53,6 +57,22 @@ ACutsceneProjectCharacter::ACutsceneProjectCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+}
+
+void ACutsceneProjectCharacter::AddInteractable_Implementation(AActor* Interactable)
+{
+	if (InteractionOwner && Interactable->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	{
+		InteractionOwner->AddInteractable(Interactable);
+	}
+}
+
+void ACutsceneProjectCharacter::RemoveInteractable_Implementation(AActor* Interactable)
+{
+	if (InteractionOwner && Interactable->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	{
+		InteractionOwner->RemoveInteractable(Interactable);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -89,6 +109,10 @@ void ACutsceneProjectCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this,
 		                                   &ACutsceneProjectCharacter::Look);
+
+		// Interaction
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this,
+										   &ACutsceneProjectCharacter::Interact);
 	}
 	else
 	{
@@ -139,6 +163,23 @@ void ACutsceneProjectCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void ACutsceneProjectCharacter::Interact(const FInputActionValue& Value)
+{
+	if (!InteractionOwner)
+	{
+		return;
+	}
+
+	if (AActor* CurrentlySelectedActor = InteractionOwner->CurrentlySelectedActor)
+	{
+		if (!CurrentlySelectedActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+		{
+			return;
+		}
+		IInteractable::Execute_StartInteract(CurrentlySelectedActor);
 	}
 }
 

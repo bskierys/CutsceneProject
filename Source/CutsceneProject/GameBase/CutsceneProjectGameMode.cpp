@@ -3,6 +3,7 @@
 #include "CutsceneProjectGameMode.h"
 
 #include "GameBase/CutsceneProjectGameState.h"
+#include "Player/ThirdPersonPlayerController.h"
 #include "UObject/ConstructorHelpers.h"
 
 ACutsceneProjectGameMode::ACutsceneProjectGameMode()
@@ -14,4 +15,5 @@ ACutsceneProjectGameMode::ACutsceneProjectGameMode()
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
 	GameStateClass = ACutsceneProjectGameState::StaticClass();
+	PlayerControllerClass = AThirdPersonPlayerController::StaticClass();
 }
