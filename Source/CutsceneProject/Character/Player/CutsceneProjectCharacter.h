@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "Character/BaseCharacter.h"
 #include "Interaction/InteractionController.h"
 #include "Logging/LogMacros.h"
-#include "Other/WorldLibrary.h"
 #include "CutsceneProjectCharacter.generated.h"
 
+class USimpleMoveComponent;
 class UInteractionOwnerComponent;
 class USpringArmComponent;
 class UCameraComponent;
@@ -18,13 +18,8 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
-	FOnLocationWalkRequestCompleted,
-	FName, RequestId
-);
-
 UCLASS(config=Game)
-class ACutsceneProjectCharacter : public ACharacter, public IInteractionController
+class ACutsceneProjectCharacter : public ABaseCharacter, public IInteractionController
 {
 	GENERATED_BODY()
 
@@ -60,11 +55,16 @@ class ACutsceneProjectCharacter : public ACharacter, public IInteractionControll
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
 
+	virtual void Jump() override;
+	virtual void StopJumping() override;
+
 public:
 	ACutsceneProjectCharacter();
 
 	virtual void AddInteractable_Implementation(AActor* Interactable) override;
 	virtual void RemoveInteractable_Implementation(AActor* Interactable) override;
+	virtual void DisableMovementInput_Implementation() override;
+	virtual void EnableMovementInput_Implementation() override;
 
 protected:
 	/** Called for movement input */
@@ -76,12 +76,9 @@ protected:
 	/** Called for interaction input */
 	void Interact(const FInputActionValue& Value);
 
-protected:
 	virtual void NotifyControllerChanged() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -89,14 +86,6 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	// TODO: Temp functions. Use C++ PlayerController for that
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void WalkToLocationWithNotify(FLocationAndRotation TargetLocation, FName RequestId);
-	virtual void WalkToLocationWithNotify_Implementation(FLocationAndRotation TargetLocation, FName RequestId);
-
-	UPROPERTY(BlueprintAssignable)
-	FOnLocationWalkRequestCompleted OnLocationWalkRequestCompleted;
-
-	UFUNCTION(BlueprintCallable)
-	void NotifyWalkRequestCompleted(FName RequestId);
+private:
+	bool bIsMovementEnabled = true;
 };

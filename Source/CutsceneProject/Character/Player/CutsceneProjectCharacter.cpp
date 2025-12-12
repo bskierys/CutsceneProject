@@ -15,9 +15,6 @@
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
-//////////////////////////////////////////////////////////////////////////
-// ACutsceneProjectCharacter
-
 ACutsceneProjectCharacter::ACutsceneProjectCharacter()
 {
 	// Set size for collision capsule
@@ -42,7 +39,7 @@ ACutsceneProjectCharacter::ACutsceneProjectCharacter()
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
 	InteractionOwner = CreateDefaultSubobject<UInteractionOwnerComponent>(TEXT("InteractionOwner"));
-	
+
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -75,6 +72,18 @@ void ACutsceneProjectCharacter::RemoveInteractable_Implementation(AActor* Intera
 	}
 }
 
+void ACutsceneProjectCharacter::DisableMovementInput_Implementation()
+{
+	Super::DisableMovementInput_Implementation();
+	bIsMovementEnabled = false;
+}
+
+void ACutsceneProjectCharacter::EnableMovementInput_Implementation()
+{
+	Super::EnableMovementInput_Implementation();
+	bIsMovementEnabled = true;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -99,8 +108,8 @@ void ACutsceneProjectCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACutsceneProjectCharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACutsceneProjectCharacter::StopJumping);
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this,
@@ -112,7 +121,7 @@ void ACutsceneProjectCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 
 		// Interaction
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this,
-										   &ACutsceneProjectCharacter::Interact);
+		                                   &ACutsceneProjectCharacter::Interact);
 	}
 	else
 	{
@@ -123,15 +132,27 @@ void ACutsceneProjectCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 	}
 }
 
-void ACutsceneProjectCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	OnLocationWalkRequestCompleted.Clear();
+//////////////////////////////////////////////////////////////////////////
+// ACutsceneProjectCharacter
 
-	Super::EndPlay(EndPlayReason);
+void ACutsceneProjectCharacter::Jump()
+{
+	if (!bIsMovementEnabled) return;
+	
+	Super::Jump();
+}
+
+void ACutsceneProjectCharacter::StopJumping()
+{
+	if (!bIsMovementEnabled) return;
+	
+	Super::StopJumping();
 }
 
 void ACutsceneProjectCharacter::Move(const FInputActionValue& Value)
 {
+	if (!bIsMovementEnabled) return;
+	
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -155,6 +176,8 @@ void ACutsceneProjectCharacter::Move(const FInputActionValue& Value)
 
 void ACutsceneProjectCharacter::Look(const FInputActionValue& Value)
 {
+	if (!bIsMovementEnabled) return;
+	
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
@@ -168,6 +191,8 @@ void ACutsceneProjectCharacter::Look(const FInputActionValue& Value)
 
 void ACutsceneProjectCharacter::Interact(const FInputActionValue& Value)
 {
+	if (!bIsMovementEnabled) return;
+	
 	if (!InteractionOwner)
 	{
 		return;
@@ -181,18 +206,4 @@ void ACutsceneProjectCharacter::Interact(const FInputActionValue& Value)
 		}
 		IInteractable::Execute_StartInteract(CurrentlySelectedActor);
 	}
-}
-
-void ACutsceneProjectCharacter::WalkToLocationWithNotify_Implementation(
-	FLocationAndRotation TargetLocation,
-	FName RequestId
-)
-{
-	// TODO: WalkRequest
-	NotifyWalkRequestCompleted(RequestId);
-}
-
-void ACutsceneProjectCharacter::NotifyWalkRequestCompleted(FName RequestId)
-{
-	OnLocationWalkRequestCompleted.Broadcast(RequestId);
 }
