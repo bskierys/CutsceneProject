@@ -84,6 +84,18 @@ void ACutsceneProjectCharacter::EnableMovementInput_Implementation()
 	bIsMovementEnabled = true;
 }
 
+void ACutsceneProjectCharacter::DisableCameraInput_Implementation()
+{
+	Super::DisableCameraInput_Implementation();
+	bIsCameraEnabled = false;
+}
+
+void ACutsceneProjectCharacter::EnableCameraInput_Implementation()
+{
+	Super::EnableCameraInput_Implementation();
+	bIsCameraEnabled = true;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -176,7 +188,7 @@ void ACutsceneProjectCharacter::Move(const FInputActionValue& Value)
 
 void ACutsceneProjectCharacter::Look(const FInputActionValue& Value)
 {
-	if (!bIsMovementEnabled) return;
+	if (!bIsCameraEnabled) return;
 	
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();

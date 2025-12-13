@@ -65,6 +65,8 @@ public:
 	virtual void RemoveInteractable_Implementation(AActor* Interactable) override;
 	virtual void DisableMovementInput_Implementation() override;
 	virtual void EnableMovementInput_Implementation() override;
+	virtual void DisableCameraInput_Implementation() override;
+	virtual void EnableCameraInput_Implementation() override;
 
 protected:
 	/** Called for movement input */
@@ -88,4 +90,5 @@ public:
 
 private:
 	bool bIsMovementEnabled = true;
+	bool bIsCameraEnabled = true;
 };
