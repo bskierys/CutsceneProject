@@ -12,9 +12,15 @@
 				"Engine",
 				"CoreUObject",
 				"DeveloperSettings",
-				"UMG"
+				"UMG",
+				"MovieScene"
 			]
-		}
+		},
+		    {
+      			"Name": "MyGameEditor",
+      			"Type": "Editor",
+      			"LoadingPhase": "Default"
+    		}
 	],
 	"Plugins": [
 		{

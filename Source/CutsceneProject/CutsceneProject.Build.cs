@@ -9,7 +9,13 @@ public class CutsceneProject : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
 			"MovieScene",
-			"LevelSequence"
+			"LevelSequence",
+			"Sequencer",
+			"MovieSceneTools",
+			"LevelSequence",
+			"Slate",
+			"SlateCore",
+			"EditorStyle"
 		});
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -23,7 +29,9 @@ public class CutsceneProject : ModuleRules
 			"LevelSequence",
 			"UMG",
 			"Slate",
-			"SlateCore"
+			"SlateCore",
+			"MovieScene",
+			"MovieSceneTracks"
 		});
 		
 		PrivateIncludePaths.AddRange(new string[] { "CutsceneProject" });
