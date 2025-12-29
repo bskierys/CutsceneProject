@@ -3,6 +3,14 @@
 #include "Cutscene/CutsceneLogic.h"
 #include "Kismet/GameplayStatics.h"
 
+void UCutsceneLogic::BeginDestroy()
+{
+	Super::BeginDestroy();
+	OnNextSequenceStep.Clear();
+	OnLastSequenceStep.Clear();
+	OnSkipSequenceStep.Clear();
+}
+
 void UCutsceneLogic::Init_Implementation(UWorld* World)
 {
 	Super::Init_Implementation(World);
@@ -12,22 +20,21 @@ void UCutsceneLogic::Init_Implementation(UWorld* World)
 	}
 }
 
-bool UCutsceneLogic::IsAtFirstStep_Implementation() const
+void UCutsceneLogic::AdvanceStep_Implementation()
 {
-	return true;
 }
 
-bool UCutsceneLogic::HasNextStep_Implementation() const
+void UCutsceneLogic::BroadcastNextSequenceStep(FCutsceneSequencerStep NextStep)
 {
-	return false;
+	OnNextSequenceStep.Broadcast(NextStep);
 }
 
-bool UCutsceneLogic::AdvanceStep_Implementation()
+void UCutsceneLogic::BroadcastLastSequenceStep()
 {
-	return false;
+	OnLastSequenceStep.Broadcast();
 }
 
-ULevelSequence* UCutsceneLogic::GetCurrentStepSequence_Implementation()
+void UCutsceneLogic::BroadcastSkipSequenceStep()
 {
-	return nullptr;
+	OnSkipSequenceStep.Broadcast();
 }

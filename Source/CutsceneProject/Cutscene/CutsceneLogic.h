@@ -8,43 +8,64 @@
 #include "UObject/NoExportTypes.h"
 #include "CutsceneLogic.generated.h"
 
-/**
- * 
- */
+USTRUCT(BlueprintType)
+struct FCutsceneSequencerStep
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ULevelSequence* Sequence;
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FOnNextSequenceStep,
+	FCutsceneSequencerStep,
+	CurrentStep
+);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(
+	FOnLastSequenceStep
+);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(
+	FOnSkipSequenceStep
+);
+
 UCLASS(Abstract, Blueprintable, DefaultToInstanced, EditInlineNew)
 class CUTSCENEPROJECT_API UCutsceneLogic : public UObjectWithWorld
 {
 	GENERATED_BODY()
 
 public:
+	virtual void BeginDestroy() override;
+	
 	UPROPERTY(BlueprintReadOnly)
 	AGameStateBase* GameState;
 
 	virtual void Init_Implementation(UWorld* World) override;
-
-	/**
-	 * Does the Logic has next step.
-	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Category="Cutscenes")
-	bool IsAtFirstStep() const;
-	virtual bool IsAtFirstStep_Implementation() const;
-
-	/**
-	 * Does the Logic has next step.
-	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Category="Cutscenes")
-	bool HasNextStep() const;
-	virtual bool HasNextStep_Implementation() const;
-
+	
 	/**
 	 * Go to the next stage of Cutscene Logic.
-	 * @return Was Advancing to the next step successful?
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Cutscenes")
-	bool AdvanceStep();
-	virtual bool AdvanceStep_Implementation();
+	void AdvanceStep();
+	virtual void AdvanceStep_Implementation();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Cutscenes")
-	ULevelSequence* GetCurrentStepSequence();
-	virtual ULevelSequence* GetCurrentStepSequence_Implementation();
+	UPROPERTY(BlueprintAssignable, Category="Cutscenes")
+	FOnNextSequenceStep OnNextSequenceStep;
+	
+	UFUNCTION(BlueprintCallable, Category="Cutscenes")
+	void BroadcastNextSequenceStep(FCutsceneSequencerStep NextStep);
+	
+	UPROPERTY(BlueprintAssignable, Category="Cutscenes")
+	FOnLastSequenceStep OnLastSequenceStep;
+
+	UFUNCTION(BlueprintCallable, Category="Cutscenes")
+	void BroadcastLastSequenceStep();
+
+	UPROPERTY(BlueprintAssignable, Category="Cutscenes")
+	FOnSkipSequenceStep OnSkipSequenceStep;
+
+	UFUNCTION(BlueprintCallable, Category="Cutscenes")
+	void BroadcastSkipSequenceStep();
 };
