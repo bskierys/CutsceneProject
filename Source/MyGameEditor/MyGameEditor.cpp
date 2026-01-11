@@ -5,6 +5,7 @@
 
 #include "ISequencerModule.h"
 #include "Modules/ModuleManager.h"
+#include "Stage/CutsceneCameraTrackEditor.h"
 #include "Subtitles/SubtitleSectionDetails.h"
 #include "Subtitles/SubtitleTrackEditor.h"
 
@@ -20,6 +21,12 @@ void FMyGameEditorModule::StartupModule()
 	SubtitleTrackEditorHandle = SequencerModule.RegisterTrackEditor(
 		FOnCreateTrackEditor::CreateStatic(
 			&FSubtitleTrackEditor::CreateTrackEditorInstance
+		)
+	);
+
+	CutsceneCameraTrackHandle = SequencerModule.RegisterTrackEditor(
+		FOnCreateTrackEditor::CreateStatic(
+			&FCutsceneCameraTrackEditor::CreateTrackEditorInstance
 		)
 	);
 
@@ -43,6 +50,11 @@ void FMyGameEditorModule::ShutdownModule()
 		if (SubtitleTrackEditorHandle.IsValid())
 		{
 			SequencerModule.UnRegisterTrackEditor(SubtitleTrackEditorHandle);
+		}
+
+		if (CutsceneCameraTrackHandle.IsValid())
+		{
+			SequencerModule.UnRegisterTrackEditor(CutsceneCameraTrackHandle);
 		}
 
 		FPropertyEditorModule& PropertyModule =

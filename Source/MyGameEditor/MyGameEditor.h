@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ISequencerModule.h"
 #include "Modules/ModuleManager.h"
 
 class FMyGameEditorModule : public IModuleInterface
@@ -13,4 +14,5 @@ public:
 
 private:
 	FDelegateHandle SubtitleTrackEditorHandle;
+	FDelegateHandle CutsceneCameraTrackHandle;
 };
