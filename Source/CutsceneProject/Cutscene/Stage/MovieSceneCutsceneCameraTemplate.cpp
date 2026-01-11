@@ -9,12 +9,48 @@ void FCutsceneCameraExecutionToken::Execute(
 	IMovieScenePlayer& Player)
 {
 	UE_LOG(KierCutsceneSystem, Log, TEXT("Cutscene Camera Event Value: %d"), Value);
+
+	const UWorld* World = Player.GetPlaybackContext()
+		                      ? Player.GetPlaybackContext()->GetWorld()
+		                      : nullptr;
+
+	if (!World)
+	{
+		UE_LOG(KierCutsceneSystem, Error, TEXT("Sequencer Token Execution Error: Can't get World Instance"));
+		return;
+	}
+
+	UCutsceneSubsystem* CutsceneSubsystem = World->GetSubsystem<UCutsceneSubsystem>();
+	if (!CutsceneSubsystem)
+	{
+		UE_LOG(KierCutsceneSystem, Error, TEXT("Sequencer Token Execution Error: CutsceneSubsystem not found"));
+		return;
+	}
+
+	ACutsceneStage* ActiveStage = CutsceneSubsystem->GetActiveCutsceneStage();
+	if (!IsValid(ActiveStage))
+	{
+		UE_LOG(KierCutsceneSystem, Error, TEXT("Sequencer Token Execution Error: No Active Stage"));
+		return;
+	}
+
+	const bool Success = ActiveStage->SwitchCamera(Value, true);
+
+	if (!Success)
+	{
+		UE_LOG(
+			KierCutsceneSystem, Warning,
+			TEXT("Sequencer Token Execution Error: Camera Switch to Index: %s failed"),
+			*FString::FromInt(Value)
+		);
+	}
 }
 
 FMovieSceneCutsceneCameraTemplate::FMovieSceneCutsceneCameraTemplate(
 	const UMovieSceneCutsceneCameraSection& Section)
 	: Channel(Section.CameraEventChannel)
-{}
+{
+}
 
 void FMovieSceneCutsceneCameraTemplate::Evaluate(
 	const FMovieSceneEvaluationOperand& Operand,
